@@ -1,2 +1,12 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
+<script>
+  import { collection } from 'firebase/firestore';
+  import { FirebaseApp } from 'sveltefire';
+
+  import { firestore } from '$lib/firebase.js';
+</script>
+
+<FirebaseApp {firestore}>
+  <h1>Secrets</h1>
+
+  <p>Leave a secret, take a secret!</p>
+</FirebaseApp>
