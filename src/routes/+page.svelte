@@ -5,14 +5,15 @@
   import { firestore } from '$lib/firebase.js';
 
   let secretCollection = collection(firestore, "secrets")
-  let secretText = ""
+  let addSecretText = ""
+  let getSecret = undefined
 
   function addSecret() {
     addDoc(secretCollection, {
-      text: secretText,
+      text: addSecretText,
       complaints: 0,
     })
-    secretText = ""
+    addSecretText = ""
   }
 
   async function getRandomSecret() {
@@ -21,8 +22,7 @@
     secretsQuery.forEach(secret => {
       secrets.push(secret)
     })
-    let secret = secrets[Math.floor(Math.random() * secrets.length)].data();
-    console.log(secret)
+    getSecret = secrets[Math.floor(Math.random() * secrets.length)].data();
   }
 </script>
 
@@ -31,9 +31,14 @@
   <p>Leave a secret, take a secret!</p>
 
   <form on:submit={addSecret}>
-    <input type="text" placeholder="Leave your secret here..." bind:value={secretText} required />
+    <input type="text" placeholder="Leave your secret here..." bind:value={addSecretText} required />
     <button type="submit">Here's my secret, give me one of yours</button>
   </form>
+
+  {#if getSecret != undefined}
+    <p>{getSecret.text}</p>
+  {/if}
+
 
   <button on:click={getRandomSecret}>Just give me a secret</button>
 </FirebaseApp>
