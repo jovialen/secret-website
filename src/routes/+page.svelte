@@ -25,16 +25,74 @@
   }
 </script>
 
-<h1>Secrets</h1>
-<p>Leave a secret, take a secret!</p>
+<main>
+  <header>
+    <h1>Secrets</h1>
+    <h2>Give a secret, Get a secret!</h2>
+  </header>
 
-<form on:submit={addSecret}>
-  <input type="text" placeholder="Leave your secret here..." bind:value={addSecretText} required />
-  <button type="submit">Here's my secret, give me one of yours</button>
-</form>
+  <div>
+    {#if revealedSecret != undefined}
+      {revealedSecret.text}
+    {:else}
+      <form on:submit={addSecret}>
+        <input type="text" placeholder="Leave your secret here..." bind:value={addSecretText} required />
+        <button type="submit">Here's my secret, give me one of yours</button>
+      </form>
 
-{#if revealedSecret != undefined}
-  {revealedSecret.text}
-{/if}
+      <button on:click={getRandomSecret}>Just give me a secret</button>
+    {/if}
+  </div>
+</main>
 
-<button on:click={getRandomSecret}>Just give me a secret</button>
+
+<style>
+  main {
+    display: block;
+    position: absoulte;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+  }
+
+  header {
+    color: #dedede;
+  }
+
+  /* Small screens */
+  @media (min-width: 640px)  {
+    main {
+      max-width: 640px;
+    }
+  }
+  
+  /* Medium screens */
+  @media (min-width: 768px)  {
+    main {
+      max-width: 768px;
+    }
+  }
+  
+  /* Large screens */
+  @media (min-width: 1024px) {
+    main {
+      max-width: 1024px;
+    }
+  }
+  
+  /* XL screens */
+  @media (min-width: 1280px) {
+    main {
+      max-width: 1280px;
+    }
+  }
+  
+  /* XXL screens */
+  @media (min-width: 1536px) {
+    main {
+      max-width: 1536px;
+    }
+  }
+</style>
+
