@@ -1,6 +1,6 @@
 <script>
+  import { fly } from 'svelte/transition';
   import { collection, doc, addDoc, getDoc, getDocs, updateDoc, deleteDoc } from 'firebase/firestore';
-
   import { firestore } from '$lib/firebase.js';
 
   let secretCollection = collection(firestore, "secrets")
@@ -72,28 +72,31 @@
     </h3>
   </header>
 
-  <div class="content">
+  <div class="wrapper">
     {#if revealedSecret !== undefined}
-      <p>{revealedSecret.text}</p>
-      <button on:click={reset}>Continue</button>
-      <button on:click={complain}>Bad secret</button>
+      <div class="content" transition:fly={{ x: "100%", duration: 300 }}>
+        <p class="revealed">{revealedSecret.text}</p>
+        <button on:click={reset}>Continue</button>
+        <button on:click={complain}>Bad secret</button>
+      </div>
     {:else}
-      <p>Whatever you type will be kept anonymous for whomever sees it.</p>
+      <div class="content" transition:fly={{ x: "-100%", duration: 300 }}>
+        <p>Whatever you type will be kept anonymous for whomever sees it.</p>
 
-      <form on:submit={addSecret}>
-        <input type="text" placeholder="Leave your secret here..." bind:value={addSecretText} required />
-        <button type="submit">Here's my secret, give me one of yours</button>
-      </form>
+        <form on:submit={addSecret}>
+          <input type="text" placeholder="Leave your secret here..." bind:value={addSecretText} required />
+          <button type="submit">Here's my secret, give me one of yours</button>
+        </form>
+      </div>
     {/if}
   </div>
 </main>
-
 
 <style>
   main {
     display: block;
     position: absoulte;
-    top: 45%;
+    top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     width: 100%;
@@ -104,10 +107,37 @@
     margin-bottom: 4rem;
   }
 
+  span, button {
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+  }
+
+  div.wrapper {
+    height: 200px;
+  }
+
+  div.content {
+    width: 100%;
+    position: absolute;
+  }
+
+  div.content > * {
+    margin-bottom: 1rem;
+  }
+
+  div.content:last-child {
+    margin-bottom: 0;
+  }
+
+  .revealed {
+    margin-bottom: 3rem !important;
+    font-size: 1.5rem;
+  }
+
   form {
     display: flex;
     flex-direction: column;
-    margin-top: 1rem;
     gap: 0.5rem;
   }
 
@@ -126,7 +156,6 @@
   }
 
   button[type="submit"] {
-    cursor: pointer;
     border-color: #689D6A;
     background: #689D6A;
     min-width: fit-content;
