@@ -1,11 +1,13 @@
 <script>
-  import { collection, addDoc, getDocs } from 'firebase/firestore';
+  import { collection, doc, addDoc, getDoc, getDocs, updateDoc, deleteDoc } from 'firebase/firestore';
 
   import { firestore } from '$lib/firebase.js';
 
   let secretCollection = collection(firestore, "secrets")
   let addSecretText = ""
   let revealedSecret = undefined
+
+  getRandomSecret()
 
   function addSecret() {
     // Get a random secret before adding the new one to prevent any chance of
@@ -32,6 +34,33 @@
       ...data
     }
   }
+
+  async function complain() {
+    if (revealedSecret === undefined) {
+      return;
+    }
+
+    let secretDoc = doc(secretCollection, revealedSecret.id)
+
+    if (revealedSecret.complaints < 10) {
+      // Get the newest complaints number before incrementing to prevent a
+      // race condition
+      // TODO: This is not the right way to do this, I just want to be done
+      let complaints = await getDoc(secretDoc).complaints + 1
+      await updateDoc(secretDoc, {
+        complaints: complaints,
+      })
+    } else {
+      // Delete a secret if it is very unpopular
+      await deleteDoc(secretDoc)
+    }
+
+    reset()
+  }
+
+  function reset() {
+    revealedSecret = undefined
+  }
 </script>
 
 <main>
@@ -46,6 +75,8 @@
   <div class="content">
     {#if revealedSecret !== undefined}
       <p>{revealedSecret.text}</p>
+      <button on:click={reset}>Continue</button>
+      <button on:click={complain}>Bad secret</button>
     {:else}
       <p>Whatever you type will be kept anonymous for whomever sees it.</p>
 
