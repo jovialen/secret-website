@@ -3,22 +3,25 @@
   import { collection, doc, addDoc, getDoc, getDocs, updateDoc, deleteDoc } from 'firebase/firestore';
   import { firestore } from '$lib/firebase.js';
 
+  import InputForm from './input-form.svelte';
+
   let secretCollection = collection(firestore, "secrets")
-  let addSecretText = ""
   let revealedSecret = undefined
 
-  getRandomSecret()
-
-  function addSecret() {
+  function addSecret(event) {
     // Get a random secret before adding the new one to prevent any chance of
     // getting your own secret back
     getRandomSecret()
 
+    if (event.detail.secret == "skip") {
+      console.log("Skipping submission")
+      return;
+    }
+
     addDoc(secretCollection, {
-      text: addSecretText,
+      text: event.detail.secret,
       complaints: 0,
     })
-    addSecretText = ""
   }
 
   async function getRandomSecret() {
@@ -81,12 +84,7 @@
       </div>
     {:else}
       <div class="content" transition:fly={{ x: "-100%", duration: 300 }}>
-        <p>Whatever you type will be kept anonymous for whomever sees it.</p>
-
-        <form on:submit={addSecret}>
-          <input type="text" placeholder="Leave your secret here..." bind:value={addSecretText} required />
-          <button type="submit">Here's my secret, give me one of yours</button>
-        </form>
+        <InputForm on:submit={addSecret}></InputForm>
       </div>
     {/if}
   </div>
@@ -107,12 +105,6 @@
     margin-bottom: 4rem;
   }
 
-  span, button {
-    transition-property: all;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    transition-duration: 150ms;
-  }
-
   div.wrapper {
     height: 200px;
   }
@@ -122,47 +114,9 @@
     position: absolute;
   }
 
-  div.content > * {
-    margin-bottom: 1rem;
-  }
-
-  div.content:last-child {
-    margin-bottom: 0;
-  }
-
   .revealed {
     margin-bottom: 3rem !important;
     font-size: 1.5rem;
-  }
-
-  form {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  input, button {
-    padding: 1rem;
-    color: #dedede;
-    background: none;
-    font-size: 0.8rem;
-    border: 1px solid;
-    border-radius: 0.5rem;
-  }
-
-  input[type="text"] {
-    flex-grow: 1;
-    border-color: #dedede;
-  }
-
-  button[type="submit"] {
-    border-color: #689D6A;
-    background: #689D6A;
-    min-width: fit-content;
-  }
-
-  button[type="submit"]:hover {
-    background: #8EC07C;
   }
 
   /* Small screens */
@@ -176,22 +130,6 @@
   @media (min-width: 768px)  {
     main {
       max-width: 768px;
-    }
-
-    form {
-      flex-direction: row;
-      gap: 0;
-    }
-
-    input[type="text"] {
-      border-right: none;
-      border-top-right-radius: 0;
-      border-bottom-right-radius: 0;
-    }
-
-    button[type="submit"] {
-      border-top-left-radius: 0;
-      border-bottom-left-radius: 0;
     }
   }
   
