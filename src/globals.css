@@ -29,6 +29,16 @@ button {
 	transition-duration: 150ms;
 }
 
+input,
+button {
+	padding: 1rem;
+	color: #dedede;
+	background: none;
+	font-size: 0.8rem;
+	border: 1px solid;
+	border-radius: 0.5rem;
+}
+
 h1,
 h2,
 h3,

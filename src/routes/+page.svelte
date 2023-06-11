@@ -1,68 +1,33 @@
 <script>
   import { fly } from 'svelte/transition';
-  import { collection, doc, addDoc, getDoc, getDocs, updateDoc, deleteDoc } from 'firebase/firestore';
-  import { firestore } from '$lib/firebase.js';
+  import { addSecret, getRandomSecret, complainSecret } from '$lib/secrets.js';
 
   import InputForm from './input-form.svelte';
+  import SecretReveal from './secret-reveal.svelte';
 
-  let secretCollection = collection(firestore, "secrets")
-  let revealedSecret = undefined
+  let revealedSecret = undefined;
 
-  function addSecret(event) {
+  async function submit(event) {
     // Get a random secret before adding the new one to prevent any chance of
     // getting your own secret back
-    getRandomSecret()
+    revealedSecret = await getRandomSecret();
+    console.log(revealedSecret)
 
     if (event.detail.secret == "skip") {
-      console.log("Skipping submission")
+      console.log("Skipping submission");
       return;
     }
 
-    addDoc(secretCollection, {
-      text: event.detail.secret,
-      complaints: 0,
-    })
-  }
-
-  async function getRandomSecret() {
-    let secretsQuery = await getDocs(secretCollection)
-    let secrets = []
-    secretsQuery.forEach((secret) => {
-      secrets.push(secret)
-    })
-    let selectedSecret = secrets[Math.floor(Math.random() * secrets.length)]
-    let data = selectedSecret.data()
-    revealedSecret = {
-      id: selectedSecret.id,
-      ...data
-    }
+    addSecret(event.detail.secret);
   }
 
   async function complain() {
-    if (revealedSecret === undefined) {
-      return;
-    }
-
-    let secretDoc = doc(secretCollection, revealedSecret.id)
-
-    if (revealedSecret.complaints < 10) {
-      // Get the newest complaints number before incrementing to prevent a
-      // race condition
-      // TODO: This is not the right way to do this, I just want to be done
-      let complaints = await getDoc(secretDoc).complaints + 1
-      await updateDoc(secretDoc, {
-        complaints: complaints,
-      })
-    } else {
-      // Delete a secret if it is very unpopular
-      await deleteDoc(secretDoc)
-    }
-
-    reset()
+    complainSecret(revealedSecret);
+    reset();
   }
 
   function reset() {
-    revealedSecret = undefined
+    revealedSecret = undefined;
   }
 </script>
 
@@ -78,13 +43,11 @@
   <div class="wrapper">
     {#if revealedSecret !== undefined}
       <div class="content" transition:fly={{ x: "100%", duration: 300 }}>
-        <p class="revealed">{revealedSecret.text}</p>
-        <button on:click={reset}>Continue</button>
-        <button on:click={complain}>Bad secret</button>
+        <SecretReveal secret={revealedSecret.text} on:reset={reset} on:complain={complain}></SecretReveal>
       </div>
     {:else}
       <div class="content" transition:fly={{ x: "-100%", duration: 300 }}>
-        <InputForm on:submit={addSecret}></InputForm>
+        <InputForm on:submit={submit}></InputForm>
       </div>
     {/if}
   </div>
@@ -112,11 +75,6 @@
   div.content {
     width: 100%;
     position: absolute;
-  }
-
-  .revealed {
-    margin-bottom: 3rem !important;
-    font-size: 1.5rem;
   }
 
   /* Small screens */
