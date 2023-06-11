@@ -15,8 +15,8 @@
 </script>
 
 <p>{secret}</p>
-<button class="continue" on:click={reset}>Continue</button>
-<button class="complain" on:click={complain}>Bad secret</button>
+<button class="continue" on:click={reset}>Fortsett</button>
+<button class="complain" on:click={complain}>Dårlig hemmelighet</button>
 
 <style>
 	p {

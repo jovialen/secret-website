@@ -33,10 +33,10 @@
 
 <main>
   <header>
-    <h1>Secrets</h1>
+    <h1>Hemmeligheter</h1>
     <h3>
-      <span style:color={revealedSecret === undefined ? '#FB4934' : ''}>Give a secret</span>,
-      <span style:color={revealedSecret !== undefined ? '#689D6A' : ''}>Get a secret!</span>
+      <span style:color={revealedSecret === undefined ? '#FB4934' : ''}>Gi en Hemmelighet</span>,
+      <span style:color={revealedSecret !== undefined ? '#689D6A' : ''}>Få en Hemmelighet!</span>
     </h3>
   </header>
 

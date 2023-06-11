@@ -13,11 +13,11 @@
 </script>
 
 <div>
-	<p>Whatever you type will be kept anonymous for whomever sees it.</p>
+	<p>Det du skriver vil være anonymt for de som ser den.</p>
 
 	<form on:submit={submitSecret}>
-	  <input type='text' placeholder='Leave your secret here...' bind:value={text} required />
-	  <button type='submit'>Here's my secret, give me one of yours</button>
+	  <input type='text' placeholder='Skriv hemmeligheten din her...' bind:value={text} required />
+	  <button type='submit'>Her er hemmeligheten min</button>
 	</form>
 </div>
 
@@ -34,15 +34,6 @@
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-  }
-
-  input, button {
-    padding: 1rem;
-    color: #dedede;
-    background: none;
-    font-size: 0.8rem;
-    border: 1px solid;
-    border-radius: 0.5rem;
   }
 
   input[type="text"] {
