@@ -8,6 +8,10 @@
   let revealedSecret = undefined
 
   function addSecret() {
+    // Get a random secret before adding the new one to prevent any chance of
+    // getting your own secret back
+    getRandomSecret()
+
     addDoc(secretCollection, {
       text: addSecretText,
       complaints: 0,
@@ -18,29 +22,37 @@
   async function getRandomSecret() {
     let secretsQuery = await getDocs(secretCollection)
     let secrets = []
-    secretsQuery.forEach(secret => {
+    secretsQuery.forEach((secret) => {
       secrets.push(secret)
     })
-    revealedSecret = secrets[Math.floor(Math.random() * secrets.length)].data()
+    let selectedSecret = secrets[Math.floor(Math.random() * secrets.length)]
+    let data = selectedSecret.data()
+    revealedSecret = {
+      id: selectedSecret.id,
+      ...data
+    }
   }
 </script>
 
 <main>
   <header>
     <h1>Secrets</h1>
-    <h2>Give a secret, Get a secret!</h2>
+    <h3>
+      <span style:color={revealedSecret === undefined ? '#FB4934' : ''}>Give a secret</span>,
+      <span style:color={revealedSecret !== undefined ? '#689D6A' : ''}>Get a secret!</span>
+    </h3>
   </header>
 
-  <div>
-    {#if revealedSecret != undefined}
-      {revealedSecret.text}
+  <div class="content">
+    {#if revealedSecret !== undefined}
+      <p>{revealedSecret.text}</p>
     {:else}
+      <p>Whatever you type will be kept anonymous for whomever sees it.</p>
+
       <form on:submit={addSecret}>
         <input type="text" placeholder="Leave your secret here..." bind:value={addSecretText} required />
         <button type="submit">Here's my secret, give me one of yours</button>
       </form>
-
-      <button on:click={getRandomSecret}>Just give me a secret</button>
     {/if}
   </div>
 </main>
@@ -50,14 +62,47 @@
   main {
     display: block;
     position: absoulte;
-    top: 50%;
+    top: 45%;
     left: 50%;
     transform: translate(-50%, -50%);
     width: 100%;
+    padding: 2rem;
   }
 
   header {
+    margin-bottom: 4rem;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    margin-top: 1rem;
+    gap: 0.5rem;
+  }
+
+  input, button {
+    padding: 1rem;
     color: #dedede;
+    background: none;
+    font-size: 0.8rem;
+    border: 1px solid;
+    border-radius: 0.5rem;
+  }
+
+  input[type="text"] {
+    flex-grow: 1;
+    border-color: #dedede;
+  }
+
+  button[type="submit"] {
+    cursor: pointer;
+    border-color: #689D6A;
+    background: #689D6A;
+    min-width: fit-content;
+  }
+
+  button[type="submit"]:hover {
+    background: #8EC07C;
   }
 
   /* Small screens */
@@ -71,6 +116,22 @@
   @media (min-width: 768px)  {
     main {
       max-width: 768px;
+    }
+
+    form {
+      flex-direction: row;
+      gap: 0;
+    }
+
+    input[type="text"] {
+      border-right: none;
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+
+    button[type="submit"] {
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
     }
   }
   
