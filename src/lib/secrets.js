@@ -1,28 +1,48 @@
-import { collection, doc, addDoc, getDoc, getDocs, updateDoc, deleteDoc } from 'firebase/firestore';
+import { collection, doc, addDoc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { firestore } from '$lib/firebase.js';
 
+// The manifest is here to have a single document refrencing all the secrets
+// in the collection. Without it, the only way to select a random document
+// from the collection would be by reading all of them, and then selecting a
+// random one after that. This results in a ludicrous amount of reads, and
+// is therefore dumb.
+export const secretsManifestDoc = doc(firestore, "secrets/manifest");
 export const secretsCollection = collection(firestore, 'secrets');
 
+async function addToManifest(id) {
+	let manifest = (await getDoc(secretsManifestDoc)).data();
+	manifest.ids.push(id);
+	updateDoc(secretsManifestDoc, manifest);
+}
+
+async function removeFromManifest(id) {
+	let manifest = (await getDoc(secretsManifestDoc)).data();
+	manifest.ids.remove(id);
+	updateDoc(secretsManifestDoc, manifest);
+}
+
 export async function addSecret(text) {
-	addDoc(secretsCollection, {
+	let ref = await addDoc(secretsCollection, {
 		text: text,
 		complaints: 0
 	});
+	console.log(ref.id);
+	await addToManifest(ref.id);
 }
 
 export async function getRandomSecret() {
-	let secrets = (await getDocs(secretsCollection)).docs;
-	let selectedSecret = secrets[Math.floor(Math.random() * secrets.length)];
-	let data = selectedSecret.data();
+	let manifest = (await getDoc(secretsManifestDoc)).data();
+	let id = manifest.ids[Math.floor(Math.random() * manifest.ids.length)];
+	let secret = await getDoc(doc(secretsCollection, id));
 	return {
-		id: selectedSecret.id,
-		...data
-	};
+		id: id,
+		...secret.data()
+	}
 }
 
 export async function getSecretCount() {
-	let query = await getDocs(secretsCollection);
-	return query.size;
+	let query = await getDoc(secretsManifestDoc);
+	return query.data().ids.length;
 }
 
 export async function complainSecret(secret) {
@@ -35,5 +55,6 @@ export async function complainSecret(secret) {
 		});
 	} else {
 		deleteDoc(secretDoc);
+		removeFromManifest(secret.id);
 	}
 }
