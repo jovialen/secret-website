@@ -17,7 +17,7 @@ async function addToManifest(id) {
 
 async function removeFromManifest(id) {
 	let manifest = (await getDoc(secretsManifestDoc)).data();
-	manifest.ids.remove(id);
+	manifest.ids = manifest.ids.filter(item => item !== id);
 	updateDoc(secretsManifestDoc, manifest);
 }
 
