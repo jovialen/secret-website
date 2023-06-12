@@ -20,6 +20,11 @@ export async function getRandomSecret() {
 	};
 }
 
+export async function getSecretCount() {
+	let query = await getDocs(secretsCollection);
+	return query.size;
+}
+
 export async function complainSecret(secret) {
 	let secretDoc = doc(secretsCollection, secret.id);
 	let complaints = (await getDoc(secretDoc)).data().complaints + 1;

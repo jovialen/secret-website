@@ -1,10 +1,12 @@
 <script>
+  import { onMount } from 'svelte';
   import { fly } from 'svelte/transition';
-  import { addSecret, getRandomSecret, complainSecret } from '$lib/secrets.js';
+  import { addSecret, getRandomSecret, complainSecret, getSecretCount } from '$lib/secrets.js';
 
   import InputForm from './input-form.svelte';
   import SecretReveal from './secret-reveal.svelte';
 
+  let secretCount = "Laster...";
   let revealedSecret = undefined;
 
   async function submit(event) {
@@ -29,7 +31,13 @@
   function reset() {
     revealedSecret = undefined;
   }
+
+  onMount(async () => {
+    secretCount = await getSecretCount();
+  });
 </script>
+
+<p>Antall hemmeligheter i spill: {secretCount}</p>
 
 <main>
   <header>
@@ -54,6 +62,12 @@
 </main>
 
 <style>
+  p {
+    margin: 1rem;
+    font-size: 0.8rem;
+    color: #79838ef0;
+  }
+  
   main {
     display: block;
     position: absoulte;
