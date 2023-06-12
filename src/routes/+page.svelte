@@ -63,7 +63,9 @@
 
 <style>
   p {
-    margin: 1rem;
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
     font-size: 0.8rem;
     color: #79838ef0;
   }
