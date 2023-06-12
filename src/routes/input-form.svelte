@@ -13,7 +13,7 @@
 </script>
 
 <div>
-	<p>Det du skriver vil være anonymt for de som ser den.</p>
+	<p>Det du skriver er helt anonymt. Det vil aldri bli lagret noen informasjon om hvem som skriver hva.</p>
 
 	<form on:submit={submitSecret}>
 	  <input type='text' placeholder='Skriv hemmeligheten din her...' bind:value={text} required />
