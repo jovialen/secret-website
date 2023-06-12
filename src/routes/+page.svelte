@@ -87,28 +87,28 @@
   /* Medium screens */
   @media (min-width: 768px)  {
     main {
-      max-width: 768px;
+      max-width: 640px;
     }
   }
   
   /* Large screens */
   @media (min-width: 1024px) {
     main {
-      max-width: 1024px;
+      max-width: 768px;
     }
   }
   
   /* XL screens */
   @media (min-width: 1280px) {
     main {
-      max-width: 1280px;
+      max-width: 1024px;
     }
   }
   
   /* XXL screens */
   @media (min-width: 1536px) {
     main {
-      max-width: 1536px;
+      max-width: 1280px;
     }
   }
 </style>
