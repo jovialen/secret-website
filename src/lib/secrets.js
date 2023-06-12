@@ -49,7 +49,7 @@ export async function complainSecret(secret) {
 	let secretDoc = doc(secretsCollection, secret.id);
 	let complaints = (await getDoc(secretDoc)).data().complaints + 1;
 
-	if (complaints < 10) {
+	if (complaints < 5) {
 		updateDoc(secretDoc, {
 			complaints: complaints
 		});
